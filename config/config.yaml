@@ -1,0 +1,9 @@
+server:
+  httpPort: ":8080"
+
+logger:
+  env: "dev"
+  logFilePath: "/logs/logs.log"
+
+database:
+  sslmode: "disable"
