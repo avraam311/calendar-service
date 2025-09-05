@@ -1,7 +1,7 @@
 ## Обзор
 
 Сервис для работы с календарем событий.
-Стэк: Golang, Gin, Docker, PostgreSQL.
+Стэк: Golang, Chi, Docker, PostgreSQL.
 
 ---
 
@@ -10,8 +10,8 @@
 ### 1. Сканируйте репозиторий
 
 ```bash
-git clone https://github.com/avraam311/calendar
-cd calendar
+git clone https://github.com/avraam311/calendar-service
+cd calendar-service
 ````
 
 ### 2. Создайте `.env` файл

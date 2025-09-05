@@ -1,4 +1,4 @@
-.PHONY: up, down, lint, test
+.PHONY: up, down, lint
 
 up:
 	docker-compose up -d --build
@@ -9,7 +9,3 @@ down:
 lint:
 	go vet ./...
 	golangci-lint run ./...
-
-test:
-	go clean -testcache
-	go test ./...

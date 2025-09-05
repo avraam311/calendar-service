@@ -1,4 +1,24 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    env_file:
+      - .env
+    networks:
+      - app-tier
+    volumes:
+      - ./logs:/logs
+
   db:
     image: postgres:latest
     restart: always
@@ -38,7 +58,7 @@ services:
       test: [ "CMD", "sh", "-c", "exit 0" ]
       interval: 5s
       timeout: 3s
-      retries: 1
+      retries: 5
     volumes:
       - ./migrations:/migrations
     networks:

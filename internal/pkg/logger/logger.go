@@ -33,8 +33,8 @@ func SetupLogger(env string, logFilePath string) *zap.Logger {
 		config = zap.Config{
 			Level:             zap.NewAtomicLevelAt(zap.InfoLevel),
 			Development:       false,
-			DisableCaller:     false,
-			DisableStacktrace: false,
+			DisableCaller:     true,
+			DisableStacktrace: true,
 			Encoding:          "json",
 			EncoderConfig:     encoderCfg,
 			OutputPaths:       outputPaths,
@@ -45,8 +45,8 @@ func SetupLogger(env string, logFilePath string) *zap.Logger {
 		config = zap.Config{
 			Level:             zap.NewAtomicLevelAt(zap.DebugLevel),
 			Development:       true,
-			DisableCaller:     false,
-			DisableStacktrace: false,
+			DisableCaller:     true,
+			DisableStacktrace: true,
 			Encoding:          "console",
 			EncoderConfig:     encoderCfg,
 			OutputPaths:       outputPaths,

@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
-	"github.com/avraam311/calendar/internal/api/handlers/event"
+	"github.com/avraam311/calendar-service/internal/api/handlers/event"
 )
 
 func NewRouter(eventPostHandler *event.PostHandler) http.Handler {
@@ -26,6 +26,10 @@ func NewRouter(eventPostHandler *event.PostHandler) http.Handler {
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 	}))
+
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/create_event", eventPostHandler.CreateEvent)
+	})
 
 	return r
 }
