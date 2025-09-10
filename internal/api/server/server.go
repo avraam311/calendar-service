@@ -21,7 +21,7 @@ func NewRouter(eventPostHandler *event.PostHandler) http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://*"},
-		AllowedMethods:   []string{"GET", "POST"},
+		AllowedMethods:   []string{"POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -29,6 +29,8 @@ func NewRouter(eventPostHandler *event.PostHandler) http.Handler {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/create_event", eventPostHandler.CreateEvent)
+		r.Put("/update_event", eventPostHandler.UpdateEvent)
+		r.Delete("/delete_event", eventPostHandler.DeleteEvent)
 	})
 
 	return r

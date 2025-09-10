@@ -2,18 +2,15 @@ package event
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
-	"github.com/avraam311/calendar-service/internal/models/domain"
-)
-
-var (
-	ErrInvalidDate = errors.New("invalid event date")
+	"github.com/avraam311/calendar-service/internal/models"
 )
 
 type eventRepo interface {
-	CreateEvent(ctx context.Context, event domain.Event) (int, error)
+	CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error)
+	UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error)
+	DeleteEvent(ctx context.Context, ID uint) (uint, error)
 }
 
 type Service struct {
@@ -26,11 +23,29 @@ func New(r eventRepo) *Service {
 	}
 }
 
-func (s *Service) CreateEvent(ctx context.Context, event domain.Event) (int, error) {
-	id, err := s.eventRepo.CreateEvent(ctx, event)
+func (s *Service) CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error) {
+	ID, err := s.eventRepo.CreateEvent(ctx, event)
 	if err != nil {
-		return -1, fmt.Errorf("create event - %w", err)
+		return 0, fmt.Errorf("service/CreateEvent - %w", err)
 	}
 
-	return id, nil
+	return ID, nil
+}
+
+func (s *Service) UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error) {
+	ID, err := s.eventRepo.UpdateEvent(ctx, event)
+	if err != nil {
+		return 0, fmt.Errorf("service/UpdateEvent - %w", err)
+	}
+
+	return ID, nil
+}
+
+func (s *Service) DeleteEvent(ctx context.Context, ID uint) (uint, error) {
+	ID, err := s.eventRepo.DeleteEvent(ctx, ID)
+	if err != nil {
+		return 0, fmt.Errorf("service/DeleteEvent - %w", err)
+	}
+
+	return ID, nil
 }
