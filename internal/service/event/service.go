@@ -7,6 +7,7 @@ import (
 	"github.com/avraam311/calendar-service/internal/models"
 )
 
+//go:generate mockgen -source=service.go -destination=../../mocks/mock_service.go -package=mocks
 type eventRepo interface {
 	CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error)
 	UpdateEvent(ctx context.Context, event *models.Event) (uint, error)

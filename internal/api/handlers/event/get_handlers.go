@@ -1,7 +1,6 @@
 package event
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -12,17 +11,13 @@ import (
 	"github.com/avraam311/calendar-service/internal/pkg/validator"
 )
 
-type eventGetService interface {
-	GetEvents(ctx context.Context, eventGet *models.EventGet) ([]*models.Event, error)
-}
-
 type GetHandler struct {
 	logger       *zap.Logger
 	validator    *validator.GoValidator
-	eventService eventGetService
+	eventService eventService
 }
 
-func NewGetHandler(l *zap.Logger, v *validator.GoValidator, s eventGetService) *GetHandler {
+func NewGetHandler(l *zap.Logger, v *validator.GoValidator, s eventService) *GetHandler {
 	return &GetHandler{
 		logger:       l,
 		eventService: s,
@@ -90,7 +85,7 @@ func (h *GetHandler) GetEventsForDay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		h.logger.Error("failed to encode error response", zap.Error(err))
@@ -158,7 +153,7 @@ func (h *GetHandler) GetEventsForWeek(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		h.logger.Error("failed to encode error response", zap.Error(err))
@@ -226,7 +221,7 @@ func (h *GetHandler) GetEventsForMonth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		h.logger.Error("failed to encode error response", zap.Error(err))

@@ -66,7 +66,6 @@ func (r *Repository) DeleteEvent(ctx context.Context, ID uint) (uint, error) {
 
 	cmdTag, err := r.db.Exec(ctx, query, ID)
 	if cmdTag.RowsAffected() == 0 {
-		fmt.Println("on right way")
 		return 0, ErrEventNotFound
 	}
 
@@ -91,7 +90,7 @@ func (r *Repository) GetEvents(ctx context.Context, eventGet *models.EventGet) (
 	}
 	defer rows.Close()
 
-	var events []*models.Event
+	events := []*models.Event{}
 	for rows.Next() {
 		var e models.Event
 		if err := rows.Scan(&e.ID, &e.UserID, &e.Event, &e.Date); err != nil {

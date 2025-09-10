@@ -1,7 +1,6 @@
 package event
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -14,19 +13,13 @@ import (
 	eventR "github.com/avraam311/calendar-service/internal/repository/event"
 )
 
-type eventPostService interface {
-	CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error)
-	UpdateEvent(ctx context.Context, event *models.Event) (uint, error)
-	DeleteEvent(ctx context.Context, ID uint) (uint, error)
-}
-
 type PostHandler struct {
 	logger       *zap.Logger
 	validator    *validator.GoValidator
-	eventService eventPostService
+	eventService eventService
 }
 
-func NewPostHandler(l *zap.Logger, v *validator.GoValidator, s eventPostService) *PostHandler {
+func NewPostHandler(l *zap.Logger, v *validator.GoValidator, s eventService) *PostHandler {
 	return &PostHandler{
 		logger:       l,
 		eventService: s,
