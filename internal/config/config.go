@@ -19,8 +19,9 @@ type Server struct {
 }
 
 type Logger struct {
-	Env         string `yaml:"env"`
-	LogFilePath string `yaml:"logFilePath"`
+	Env           string `yaml:"env"`
+	LogFilePath   string `yaml:"logFilePath"`
+	MdLogFilePath string `yaml:"mdLogFilePath"`
 }
 
 type Database struct {

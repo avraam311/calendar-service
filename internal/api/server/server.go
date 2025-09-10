@@ -7,11 +7,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"go.uber.org/zap"
 
 	"github.com/avraam311/calendar-service/internal/api/handlers/event"
+	"github.com/avraam311/calendar-service/internal/middlewares"
 )
 
-func NewRouter(eventPostHandler *event.PostHandler, eventGetHandler *event.GetHandler) http.Handler {
+func NewRouter(eventPostHandler *event.PostHandler, eventGetHandler *event.GetHandler, logger *zap.Logger) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -26,6 +28,7 @@ func NewRouter(eventPostHandler *event.PostHandler, eventGetHandler *event.GetHa
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 	}))
+	r.Use(middlewares.Logger(logger))
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/create_event", eventPostHandler.CreateEvent)

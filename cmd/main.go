@@ -26,6 +26,7 @@ func main() {
 
 	cfg := config.MustLoad()
 	log := logger.SetupLogger(cfg.Logger.Env, cfg.Logger.LogFilePath)
+	mdLog := logger.SetupLogger(cfg.Logger.Env, cfg.Logger.MdLogFilePath)
 	val := validator.New()
 
 	dbpool, err := pgxpool.New(ctx, cfg.DatabaseURL())
@@ -37,7 +38,7 @@ func main() {
 	eventS := eventService.New(eventR)
 	eventPostH := eventHandler.NewPostHandler(log, val, eventS)
 	eventGetH := eventHandler.NewGetHandler(log, val, eventS)
-	r := server.NewRouter(eventPostH, eventGetH)
+	r := server.NewRouter(eventPostH, eventGetH, mdLog)
 	s := server.NewServer(cfg.Server.HTTPPort, r)
 
 	go func() {
