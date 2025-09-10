@@ -35,8 +35,9 @@ func main() {
 
 	eventR := eventRepo.New(dbpool)
 	eventS := eventService.New(eventR)
-	eventH := eventHandler.NewPostHandler(log, val, eventS)
-	r := server.NewRouter(eventH)
+	eventPostH := eventHandler.NewPostHandler(log, val, eventS)
+	eventGetH := eventHandler.NewGetHandler(log, val, eventS)
+	r := server.NewRouter(eventPostH, eventGetH)
 	s := server.NewServer(cfg.Server.HTTPPort, r)
 
 	go func() {

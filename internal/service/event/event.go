@@ -9,8 +9,9 @@ import (
 
 type eventRepo interface {
 	CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error)
-	UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error)
+	UpdateEvent(ctx context.Context, event *models.Event) (uint, error)
 	DeleteEvent(ctx context.Context, ID uint) (uint, error)
+	GetEvents(ctx context.Context, eventGet *models.EventGet) ([]*models.Event, error)
 }
 
 type Service struct {
@@ -32,7 +33,7 @@ func (s *Service) CreateEvent(ctx context.Context, event *models.EventCreate) (u
 	return ID, nil
 }
 
-func (s *Service) UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error) {
+func (s *Service) UpdateEvent(ctx context.Context, event *models.Event) (uint, error) {
 	ID, err := s.eventRepo.UpdateEvent(ctx, event)
 	if err != nil {
 		return 0, fmt.Errorf("service/UpdateEvent - %w", err)
@@ -48,4 +49,13 @@ func (s *Service) DeleteEvent(ctx context.Context, ID uint) (uint, error) {
 	}
 
 	return ID, nil
+}
+
+func (s *Service) GetEvents(ctx context.Context, eventGet *models.EventGet) ([]*models.Event, error) {
+	events, err := s.eventRepo.GetEvents(ctx, eventGet)
+	if err != nil {
+		return nil, fmt.Errorf("service/GetEvents - %w", err)
+	}
+
+	return events, nil
 }

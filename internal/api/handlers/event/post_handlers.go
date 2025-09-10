@@ -14,19 +14,19 @@ import (
 	eventR "github.com/avraam311/calendar-service/internal/repository/event"
 )
 
-type eventService interface {
+type eventPostService interface {
 	CreateEvent(ctx context.Context, event *models.EventCreate) (uint, error)
-	UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error)
+	UpdateEvent(ctx context.Context, event *models.Event) (uint, error)
 	DeleteEvent(ctx context.Context, ID uint) (uint, error)
 }
 
 type PostHandler struct {
 	logger       *zap.Logger
 	validator    *validator.GoValidator
-	eventService eventService
+	eventService eventPostService
 }
 
-func NewPostHandler(l *zap.Logger, v *validator.GoValidator, s eventService) *PostHandler {
+func NewPostHandler(l *zap.Logger, v *validator.GoValidator, s eventPostService) *PostHandler {
 	return &PostHandler{
 		logger:       l,
 		eventService: s,
@@ -53,12 +53,6 @@ func (h *PostHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Warn("validation error", zap.Error(err))
 		h.handleError(w, http.StatusBadRequest, "validation error")
-		return
-	}
-
-	if event.Date.IsZero() {
-		h.logger.Warn("cannot use zero time(year 1, month 1, 00:00:00)", zap.Time("event_date", event.Date))
-		h.handleError(w, http.StatusBadRequest, "zero time error")
 		return
 	}
 
@@ -91,7 +85,7 @@ func (h *PostHandler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var event *models.EventUpdate
+	var event *models.Event
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
 		h.logger.Warn("failed to decode JSON", zap.Error(err))
@@ -126,7 +120,7 @@ func (h *PostHandler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		h.logger.Error("failed to encode error response", zap.Error(err))
@@ -176,7 +170,7 @@ func (h *PostHandler) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		h.logger.Error("failed to encode error response", zap.Error(err))

@@ -11,7 +11,6 @@ import (
 
 var (
 	ErrEventNotFound = errors.New("event not found")
-	ErrNoNewData     = errors.New("nothing to update")
 )
 
 type Repository struct {
@@ -40,7 +39,7 @@ func (r *Repository) CreateEvent(ctx context.Context, event *models.EventCreate)
 	return ID, nil
 }
 
-func (r *Repository) UpdateEvent(ctx context.Context, event *models.EventUpdate) (uint, error) {
+func (r *Repository) UpdateEvent(ctx context.Context, event *models.Event) (uint, error) {
 	query := `
 		UPDATE events
 		SET
@@ -50,10 +49,7 @@ func (r *Repository) UpdateEvent(ctx context.Context, event *models.EventUpdate)
 		WHERE id = $4;
 	`
 
-	cmdTag, err := r.db.Exec(ctx, query, event.UserID, event.Event, event.Date, event.ID)
-	if cmdTag.RowsAffected() == 0 {
-		return 0, ErrNoNewData
-	}
+	_, err := r.db.Exec(ctx, query, event.UserID, event.Event, event.Date, event.ID)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository/UpdateEvent - %w", err)
@@ -79,4 +75,31 @@ func (r *Repository) DeleteEvent(ctx context.Context, ID uint) (uint, error) {
 	}
 
 	return ID, nil
+}
+
+func (r *Repository) GetEvents(ctx context.Context, eventGet *models.EventGet) ([]*models.Event, error) {
+	query := `
+		SELECT id, user_id, event, date
+		FROM events
+		WHERE user_id = $1 AND date >= $2 AND date <= $3
+		ORDER BY date
+    `
+
+	rows, err := r.db.Query(ctx, query, eventGet.UserID, eventGet.DateFrom, eventGet.DateTo)
+	if err != nil {
+		return nil, fmt.Errorf("repository/GetEvents - %w", err)
+	}
+	defer rows.Close()
+
+	var events []*models.Event
+	for rows.Next() {
+		var e models.Event
+		if err := rows.Scan(&e.ID, &e.UserID, &e.Event, &e.Date); err != nil {
+			return nil, fmt.Errorf("repository/GetEvents - %w", err)
+		}
+
+		events = append(events, &e)
+	}
+
+	return events, nil
 }
